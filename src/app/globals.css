@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f3efe8;
+  --surface: #fffcf8;
+  --ink: #1f2a24;
+  --muted: #5c675f;
+  --accent: #3f6f5b;
+  --accent-soft: #d7e4dc;
+  --highlight: #c4a484;
+  --border: #e2d9cc;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-highlight: var(--highlight);
+  --color-border: var(--border);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 90% 60% at 15% 0%, rgba(215, 228, 220, 0.55), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 10%, rgba(196, 164, 132, 0.18), transparent 50%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+@keyframes hero-ken {
+  from {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  to {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-ken {
+  animation: hero-ken 8s ease-out forwards;
+}
+
+.animate-rise {
+  animation: rise 0.35s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-ken,
+  .animate-rise {
+    animation: none;
+  }
+}
