@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img" aria-label="Handmade vessels">
+  <defs>
+    <radialGradient id="wash" cx="60%" cy="40%" r="75%">
+      <stop offset="0%" stop-color="#FFFCF8"/>
+      <stop offset="55%" stop-color="#F3EFE8"/>
+      <stop offset="100%" stop-color="#E2D9CC"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1200" fill="url(#wash)"/>
+  <ellipse cx="980" cy="900" rx="280" ry="40" fill="#D6CBB8" opacity="0.35"/>
+  <path d="M860 340 C860 280 1100 280 1100 340 L1180 720 C1220 940 740 940 780 720 Z" fill="#C4A484" stroke="#8B6F52" stroke-width="4"/>
+  <rect x="920" y="300" width="120" height="50" rx="12" fill="#C4A484" stroke="#8B6F52" stroke-width="4"/>
+  <path d="M420 520 C450 380 750 380 780 520 L750 820 C730 900 470 900 450 820 Z" fill="#A8C4B4" stroke="#3F6F5B" stroke-width="4"/>
+  <path d="M480 480 C520 400 680 400 720 480" fill="none" stroke="#3F6F5B" stroke-width="12" stroke-linecap="round"/>
+  <path d="M500 520 H700 M500 590 H700 M500 660 H700 M500 730 H700" stroke="#7A9A88" stroke-width="5" opacity="0.55"/>
+</svg>
