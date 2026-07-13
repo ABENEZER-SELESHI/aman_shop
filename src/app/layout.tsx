@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Outfit } from "next/font/google";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AppProviders } from "@/providers/AppProviders";
 import { siteConfig } from "@/lib/config";
@@ -27,6 +28,10 @@ export const metadata: Metadata = {
   description:
     "Aman Shop — handmade flower vases and baskets by Amanuel. Browse, order, and pay in person at pickup.",
   metadataBase: new URL(siteConfig.siteUrl),
+  icons: {
+    icon: [{ url: "/brand/logo.png", type: "image/png" }],
+    apple: [{ url: "/brand/logo.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -35,8 +40,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${fraunces.variable} ${outfit.variable} flex min-h-screen flex-col antialiased`}>
         <AppProviders>
           <ErrorBoundary>
+            <a href="#main" className="sr-only">
+              Skip to content
+            </a>
+            <OfflineBanner />
             <SiteHeader />
-            <main className="flex-1">{children}</main>
+            <main id="main" className="flex-1">
+              {children}
+            </main>
             <SiteFooter />
           </ErrorBoundary>
         </AppProviders>

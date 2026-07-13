@@ -42,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         className="pointer-events-none fixed bottom-6 right-6 z-[60] flex w-[min(100%-2rem,22rem)] flex-col gap-2"
-        aria-live="polite"
+        aria-live={items.some((i) => i.tone === "error") ? "assertive" : "polite"}
       >
         {items.map((item) => (
           <div

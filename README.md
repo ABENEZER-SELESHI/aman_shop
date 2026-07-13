@@ -23,13 +23,22 @@ Open [http://localhost:3000](http://localhost:3000).
 
 The order API defaults to `http://localhost:4000/api/v1` (see backend README).
 
-## Editing the catalog
+## Seller Studio
 
-1. Edit `content/products.json`
-2. Replace images under `public/products/` (and hero under `public/hero/`)
-3. Restart / rebuild if needed
+Password-protected admin at [/studio](http://localhost:3000/studio):
 
-Fields match the product type in `src/types/index.ts`.
+- Dashboard (orders + catalog overview)
+- Orders (status: New → Confirmed → Completed / Cancelled)
+- Products (add / edit / hide / delete)
+- Activity logs
+- Settings (change password)
+
+Seed credentials come from the backend `.env` (`SELLER_EMAIL` / `SELLER_PASSWORD`). Default local seed:
+
+- Email: `amanuel@amanshop.local`
+- Password: `ChangeMeSeller123!`
+
+Catalog is stored in PostgreSQL (Neon). The public shop loads products from `GET /api/v1/products` and falls back to `content/products.json` if the API is down.
 
 ## Environment
 

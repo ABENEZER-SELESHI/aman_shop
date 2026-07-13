@@ -6,8 +6,8 @@ import { HowOrderingWorks } from "@/components/home/HowOrderingWorks";
 import { getProducts } from "@/lib/products";
 import { siteConfig } from "@/lib/config";
 
-export default function HomePage() {
-  const featured = getProducts({ featuredOnly: true }).slice(0, 6);
+export default async function HomePage() {
+  const featured = (await getProducts({ featuredOnly: true })).slice(0, 6);
 
   return (
     <>

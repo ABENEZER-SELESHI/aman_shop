@@ -18,14 +18,14 @@ export function AddToCartForm({ product }: { product: Product }) {
   if (!product.available) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-[var(--muted)]">
+        <p className="text-sm text-[var(--muted)]" role="status">
           Currently unavailable — ask on{" "}
           <Link href="/contact" className="text-[var(--accent)] underline-offset-2 hover:underline">
             Contact
           </Link>
           .
         </p>
-        <Button type="button" disabled>
+        <Button type="button" disabled className="w-full sm:w-auto">
           Sold out
         </Button>
       </div>
@@ -38,7 +38,7 @@ export function AddToCartForm({ product }: { product: Product }) {
       onSubmit={(e) => {
         e.preventDefault();
         addItem(product, qty);
-        toast(`Added ${product.name} to cart`, "success");
+        toast(`${product.name} added to cart`, "success");
         openDrawer();
       }}
     >
@@ -47,6 +47,7 @@ export function AddToCartForm({ product }: { product: Product }) {
           Quantity
         </label>
         <QuantityStepper id="qty" value={qty} max={product.maxQuantity} onChange={setQty} />
+        <p className="mt-2 text-xs text-[var(--muted)]">Up to {product.maxQuantity} per order.</p>
       </div>
       <Button type="submit" className="w-full sm:w-auto">
         Add to cart

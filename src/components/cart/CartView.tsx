@@ -3,32 +3,69 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { useCartStore } from "@/store/cart";
 import { formatEtb } from "@/lib/money";
-import { getProductById } from "@/lib/products";
+import { resolveMediaUrl } from "@/lib/media";
+import { resolveCartAvailability, useCatalogMap } from "@/hooks/useCatalog";
 import { QuantityStepper } from "@/components/ui/QuantityStepper";
 import { Button } from "@/components/ui/Button";
+import { EmptyState, EmptyStateLink } from "@/components/ui/EmptyState";
+import { CartLineSkeleton } from "@/components/ui/Skeleton";
 import { PayInPersonBanner } from "./PayInPersonBanner";
+import { useToast } from "@/components/ui/Toast";
+import type { CartItem } from "@/types";
 
 export function CartView({ compact = false }: { compact?: boolean }) {
   const router = useRouter();
+  const { toast } = useToast();
   const items = useCartStore((s) => s.items);
   const updateQty = useCartStore((s) => s.updateQty);
   const removeItem = useCartStore((s) => s.removeItem);
   const subtotal = useCartStore((s) => s.subtotal());
-  const hasUnavailable = useCartStore((s) => s.hasUnavailable());
+  const { byId, isSuccess, isError, isFetching } = useCatalogMap();
+  const catalogReady = isSuccess || isError;
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => setHydrated(true), []);
+
+  const hasUnavailable = useMemo(
+    () =>
+      items.some((item) =>
+        resolveCartAvailability(item.productId, byId, {
+          catalogReady,
+          cartAvailable: item.available,
+          isFetching,
+        }).unavailable,
+      ),
+    [items, byId, catalogReady, isFetching],
+  );
+
+  const handleRemove = (item: CartItem) => {
+    removeItem(item.productId);
+    toast(`Removed ${item.name}`, "info");
+  };
+
+  if (!hydrated) {
+    return (
+      <div className="space-y-2" aria-busy="true" aria-label="Loading cart">
+        <CartLineSkeleton />
+        <CartLineSkeleton />
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
-      <div className="py-10 text-center">
-        <p className="text-[var(--muted)]">Your cart is empty.</p>
-        <Link
-          href="/shop"
-          className="mt-4 inline-block text-sm text-[var(--accent)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
-        >
-          Browse the shop
-        </Link>
-      </div>
+      <EmptyState
+        title="Your cart is empty"
+        description="Choose a vase or basket, set a quantity, and add it here. Your cart is saved in this browser."
+        action={
+          <>
+            <EmptyStateLink href="/shop">Browse shop</EmptyStateLink>
+          </>
+        }
+      />
     );
   }
 
@@ -45,17 +82,31 @@ export function CartView({ compact = false }: { compact?: boolean }) {
       ) : null}
       <ul className="divide-y divide-[var(--border)]">
         {items.map((item) => {
-          const product = getProductById(item.productId);
-          const unavailable = !product || !product.available;
+          const { product, unavailable } = resolveCartAvailability(item.productId, byId, {
+            catalogReady,
+            cartAvailable: item.available,
+            isFetching,
+          });
+          const maxQty = product?.maxQuantity ?? item.maxQuantity ?? item.quantity;
           return (
             <li key={item.productId} className="flex gap-4 py-5">
-              <div className="relative h-24 w-20 shrink-0 overflow-hidden bg-[var(--surface)]">
-                <Image src={item.image} alt={item.name} fill className="object-cover" sizes="80px" />
-              </div>
+              <Link
+                href={`/product/${item.slug}`}
+                className="relative h-24 w-20 shrink-0 overflow-hidden bg-[var(--surface)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+              >
+                <Image
+                  src={resolveMediaUrl(item.image)}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                  sizes="80px"
+                  unoptimized={item.image.includes("/uploads/")}
+                />
+              </Link>
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/product/${item.slug}`}
-                  className="text-sm font-medium text-[var(--ink)] hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+                  className="text-sm font-medium text-[var(--ink)] transition-colors hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
                 >
                   {item.name}
                 </Link>
@@ -66,14 +117,14 @@ export function CartView({ compact = false }: { compact?: boolean }) {
                 <div className="mt-3 flex flex-wrap items-center gap-3">
                   <QuantityStepper
                     value={item.quantity}
-                    max={product?.maxQuantity ?? item.quantity}
+                    max={maxQty}
                     onChange={(qty) => updateQty(item.productId, qty)}
                     disabled={unavailable}
                   />
                   <button
                     type="button"
-                    className="text-sm text-[var(--muted)] underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
-                    onClick={() => removeItem(item.productId)}
+                    className="min-h-11 text-sm text-[var(--muted)] underline-offset-2 transition-colors hover:text-[var(--ink)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+                    onClick={() => handleRemove(item)}
                   >
                     Remove
                   </button>
@@ -94,7 +145,7 @@ export function CartView({ compact = false }: { compact?: boolean }) {
       </div>
       {!compact ? (
         <Button
-          className="w-full"
+          className="min-h-11 w-full"
           disabled={hasUnavailable}
           onClick={() => router.push("/checkout")}
         >
@@ -104,14 +155,14 @@ export function CartView({ compact = false }: { compact?: boolean }) {
         <div className="flex flex-col gap-2">
           <Link
             href="/cart"
-            className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-5 py-2.5 text-center text-sm font-medium text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
+            className="inline-flex min-h-11 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface)] px-5 text-center text-sm font-medium text-[var(--ink)] transition-colors hover:border-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
           >
             View cart
           </Link>
           <Link
             href="/checkout"
             aria-disabled={hasUnavailable}
-            className={`rounded-md bg-[var(--accent)] px-5 py-2.5 text-center text-sm font-medium text-[var(--surface)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${hasUnavailable ? "pointer-events-none opacity-50" : ""}`}
+            className={`inline-flex min-h-11 items-center justify-center rounded-md bg-[var(--accent)] px-5 text-center text-sm font-medium text-[var(--surface)] transition-colors hover:bg-[#355f4e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${hasUnavailable ? "pointer-events-none opacity-50" : ""}`}
           >
             Continue to order
           </Link>

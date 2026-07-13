@@ -1,10 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import type { Product } from "@/types";
 import { formatEtb } from "@/lib/money";
+import { resolveMediaUrl } from "@/lib/media";
 import { cn } from "@/utils/cn";
+import { EmptyState, EmptyStateLink } from "@/components/ui/EmptyState";
+import { ProductCardPending } from "@/components/shop/ProductCardPending";
 
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
+  const imageSrc = resolveMediaUrl(product.images[0] ?? "");
   return (
     <li
       className="animate-rise"
@@ -12,26 +18,32 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
     >
       <Link
         href={`/product/${product.slug}`}
+        prefetch
         className={cn(
-          "group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]",
+          "group relative block transition-[transform,opacity] duration-150 motion-reduce:transition-none",
+          "active:scale-[0.985] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]",
           !product.available && "opacity-60",
         )}
       >
         <div className="relative aspect-[4/5] overflow-hidden bg-[var(--surface)]">
           <Image
-            src={product.images[0]}
+            src={imageSrc}
             alt={product.name}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             sizes="(max-width: 768px) 50vw, 33vw"
+            unoptimized={imageSrc.includes("/uploads/")}
           />
           {!product.available ? (
-            <span className="absolute bottom-3 left-3 text-xs uppercase tracking-wide text-[var(--ink)]">
+            <span className="absolute bottom-3 left-3 z-[3] bg-[var(--surface)]/90 px-2 py-1 text-xs uppercase tracking-wide text-[var(--ink)]">
               Currently unavailable
             </span>
           ) : null}
+          <ProductCardPending />
         </div>
-        <p className="mt-3 text-sm text-[var(--ink)]">{product.name}</p>
+        <p className="mt-3 text-sm text-[var(--ink)] transition-colors group-hover:text-[var(--accent)]">
+          {product.name}
+        </p>
         <p className="text-sm text-[var(--muted)]">{formatEtb(product.priceEtb)}</p>
       </Link>
     </li>
@@ -41,9 +53,11 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
 export function ProductGrid({ products }: { products: Product[] }) {
   if (products.length === 0) {
     return (
-      <p className="py-16 text-center text-[var(--muted)]">
-        No pieces in this collection yet. Check back soon.
-      </p>
+      <EmptyState
+        title="Nothing in this collection yet"
+        description="New pieces appear here when Amanuel adds them. Browse the full shop in the meantime."
+        action={<EmptyStateLink href="/shop">View all pieces</EmptyStateLink>}
+      />
     );
   }
 

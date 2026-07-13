@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { formatEtb } from "@/lib/money";
 import { isValidEthiopianPhone, normalizeEthiopianPhone } from "@/lib/phone";
-import { getProductBySlug, getProducts } from "@/lib/products";
+import { getLocalProductBySlug, getLocalProducts } from "@/lib/products";
 
 describe("formatEtb", () => {
   it("formats amounts with birr", () => {
@@ -24,9 +24,10 @@ describe("phone", () => {
 
 describe("products", () => {
   it("loads catalog with vases and baskets", () => {
-    const all = getProducts();
+    const all = getLocalProducts();
     expect(all.length).toBeGreaterThanOrEqual(8);
-    expect(getProducts({ category: "vase" }).every((p) => p.category === "vase")).toBe(true);
-    expect(getProductBySlug("amber-stoneware-vase")?.name).toBe("Amber Stoneware Vase");
+    expect(getLocalProducts({ category: "vases" }).every((p) => p.category === "vases")).toBe(true);
+    expect(getLocalProducts({ category: "baskets" }).every((p) => p.category === "baskets")).toBe(true);
+    expect(getLocalProductBySlug("amber-stoneware-vase")?.name).toBe("Amber Stoneware Vase");
   });
 });

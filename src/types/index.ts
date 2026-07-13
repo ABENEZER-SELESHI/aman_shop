@@ -1,10 +1,22 @@
-export type ProductCategory = "vase" | "basket";
+export type ProductCategory = string;
+
+export interface Category {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  sortOrder: number;
+  isActive: boolean;
+  productCount?: number;
+}
 
 export interface Product {
   id: string;
   slug: string;
   name: string;
   category: ProductCategory;
+  categoryName?: string;
+  categoryId?: string;
   priceEtb: number;
   description: string;
   materials: string;
@@ -24,6 +36,10 @@ export interface CartItem {
   quantity: number;
   image: string;
   category: ProductCategory;
+  /** Snapshot from catalog when added; used for qty caps offline. */
+  maxQuantity?: number;
+  /** Snapshot — true when added from an available product page. */
+  available?: boolean;
 }
 
 export interface CartState {
@@ -69,6 +85,9 @@ export interface CreateOrderPayload {
   customerPhone: string;
   customerNote?: string;
   preferredPickup: PickupOption;
+  deliveryLat: number;
+  deliveryLng: number;
+  deliveryAccuracyM?: number | null;
   lines: Array<{
     productId: string;
     name: string;

@@ -1,14 +1,19 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/config";
+import { BrandMark } from "./BrandMark";
 
 export function SiteFooter() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/studio")) return null;
+
   return (
     <footer className="mt-auto border-t border-[var(--border)] bg-[var(--surface)]">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3">
         <div>
-          <p className="font-[family-name:var(--font-display)] text-xl text-[var(--ink)]">
-            {siteConfig.brandName}
-          </p>
+          <BrandMark size="sm" />
           <p className="mt-2 text-sm text-[var(--muted)]">
             Handmade flower vases and baskets by {siteConfig.makerName}.
           </p>
@@ -37,6 +42,10 @@ export function SiteFooter() {
             </a>
           </p>
           <p className="mt-3 text-xs">
+            <Link href="/order/track" className="underline-offset-2 hover:underline">
+              Track order
+            </Link>
+            {" · "}
             <Link href="/contact" className="underline-offset-2 hover:underline">
               Contact &amp; pickup
             </Link>

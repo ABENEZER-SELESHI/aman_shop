@@ -28,14 +28,25 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed",
+        "inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed active:scale-[0.99]",
         variants[variant],
         className,
       )}
       disabled={disabled || loading}
+      aria-busy={loading || undefined}
       {...props}
     >
-      {loading ? "Please wait…" : children}
+      {loading ? (
+        <>
+          <span
+            className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+            aria-hidden
+          />
+          <span>{children}</span>
+        </>
+      ) : (
+        children
+      )}
     </button>
   );
 }

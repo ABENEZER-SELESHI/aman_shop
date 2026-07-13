@@ -1,7 +1,8 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { Suspense, useState, type ReactNode } from "react";
+import { NavigationProgress } from "@/components/ui/NavigationProgress";
 import { ToastProvider } from "@/components/ui/Toast";
 import { CartDrawerProvider } from "@/providers/CartDrawerProvider";
 
@@ -18,7 +19,12 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <CartDrawerProvider>{children}</CartDrawerProvider>
+        <CartDrawerProvider>
+          <Suspense fallback={null}>
+            <NavigationProgress />
+          </Suspense>
+          {children}
+        </CartDrawerProvider>
       </ToastProvider>
     </QueryClientProvider>
   );
