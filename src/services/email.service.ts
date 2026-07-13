@@ -32,14 +32,11 @@ export class EmailService {
     const text = this.renderOrderText(order);
 
     if (!this.resend) {
-      if (config.isDevelopment || config.isTest) {
-        logger.info("Email delivery skipped; order email logged without PII body", {
-          subject,
-          reference: order.reference,
-        });
-        return;
-      }
-      throw new Error("RESEND_API_KEY is required for email delivery in production");
+      logger.warn("Order email skipped — RESEND_API_KEY is not configured", {
+        subject,
+        reference: order.reference,
+      });
+      return;
     }
 
     await this.resend.emails.send({
@@ -62,11 +59,10 @@ export class EmailService {
     ].join("\n");
 
     if (!this.resend) {
-      if (config.isDevelopment || config.isTest) {
-        logger.info("Password reset email skipped (dev)", { to: input.to });
-        return;
-      }
-      throw new Error("RESEND_API_KEY is required for email delivery in production");
+      logger.warn("Password reset email skipped — RESEND_API_KEY is not configured", {
+        to: input.to,
+      });
+      return;
     }
 
     await this.resend.emails.send({

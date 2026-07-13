@@ -25,13 +25,6 @@ const envSchema = z
     ORDER_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(10),
   })
   .superRefine((value, ctx) => {
-    if (value.NODE_ENV === "production" && !value.RESEND_API_KEY) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["RESEND_API_KEY"],
-        message: "RESEND_API_KEY is required in production",
-      });
-    }
     if (value.JWT_ACCESS_SECRET === value.JWT_REFRESH_SECRET) {
       ctx.addIssue({
         code: "custom",
@@ -44,9 +37,19 @@ const envSchema = z
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
-  console.error("Invalid environment configuration", z.treeifyError(parsed.error));
+  const details = parsed.error.issues.map((issue) => ({
+    path: issue.path.join(".") || "(root)",
+    message: issue.message,
+  }));
+  console.error("Invalid environment configuration:", details);
   process.exit(1);
 }
 
 export const env = parsed.data;
 export type Env = typeof env;
+
+if (env.NODE_ENV === "production" && !env.RESEND_API_KEY) {
+  console.warn(
+    "WARN: RESEND_API_KEY is not set — order and password-reset emails are disabled until you add it in Render Environment.",
+  );
+}

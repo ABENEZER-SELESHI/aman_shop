@@ -48,7 +48,9 @@ Use the **`backend`** branch.
 - **Start command:** `npm start` (or `npx prisma migrate deploy && npm start` on first deploy)
 - TypeScript and `@types/*` live in `dependencies` so production `npm install` still can compile
 
-Set env vars from `.env.example` (Neon `DATABASE_URL` / `DIRECT_URL`, JWT secrets, CORS origins including your frontend URL, Resend keys).
+Set env vars from `.env.example` in the Render **Environment** panel (not a committed `.env` file): Neon `DATABASE_URL` / `DIRECT_URL`, JWT secrets, `CORS_ORIGIN` (include your frontend URL), `ORDER_NOTIFY_EMAIL`, `EMAIL_FROM`.
+
+`RESEND_API_KEY` is optional to boot — without it the API runs but order/password emails are skipped. Add a Resend key when you are ready to notify the seller.
 
 ## Environment
 
