@@ -14,6 +14,10 @@ export class SellerRepository implements ISellerRepository {
   async create(data: { email: string; passwordHash: string; name: string }): Promise<Seller> {
     return prisma.seller.create({ data: { ...data, email: data.email.toLowerCase() } });
   }
+
+  async updatePasswordHash(id: string, passwordHash: string): Promise<Seller> {
+    return prisma.seller.update({ where: { id }, data: { passwordHash } });
+  }
 }
 
 export const sellerRepository = new SellerRepository();

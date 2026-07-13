@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum OrderStatus {
@@ -16,7 +17,6 @@ enum OrderStatus {
   @@map("order_status")
 }
 
-/// Seller account — used only for optional studio access (no customer accounts).
 model Seller {
   id           String    @id @default(uuid()) @db.Uuid
   email        String    @unique
@@ -25,7 +25,9 @@ model Seller {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
-  refreshTokens RefreshToken[]
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  activityLogs        ActivityLog[]
 
   @@map("sellers")
 }
@@ -45,23 +47,101 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  sellerId  String    @map("seller_id") @db.Uuid
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  seller    Seller    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@index([sellerId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
+
+model Category {
+  id          String    @id @default(uuid()) @db.Uuid
+  slug        String    @unique
+  name        String
+  description String    @default("")
+  sortOrder   Int       @default(0) @map("sort_order")
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  products    Product[]
+
+  @@index([isActive])
+  @@index([sortOrder])
+  @@map("categories")
+}
+
+model Product {
+  id          String    @id
+  slug        String    @unique
+  name        String
+  categoryId  String    @map("category_id") @db.Uuid
+  category    Category  @relation(fields: [categoryId], references: [id])
+  priceEtb    Int       @map("price_etb")
+  description String
+  materials   String
+  dimensions  String
+  care        String
+  images      Json
+  featured    Boolean   @default(false)
+  available   Boolean   @default(true)
+  maxQuantity Int       @map("max_quantity")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@index([categoryId])
+  @@index([available])
+  @@index([featured])
+  @@map("products")
+}
+
 model Order {
-  id              String      @id @default(uuid()) @db.Uuid
-  reference       String      @unique
-  status          OrderStatus @default(NEW)
-  customerName    String      @map("customer_name")
-  customerPhone   String      @map("customer_phone")
-  customerNote    String      @default("") @map("customer_note")
-  preferredPickup String      @default("") @map("preferred_pickup")
-  lines           Json
-  subtotalEtb     Int         @map("subtotal_etb")
-  payInPerson     Boolean     @default(true) @map("pay_in_person")
-  createdAt       DateTime    @default(now()) @map("created_at")
-  updatedAt       DateTime    @updatedAt @map("updated_at")
-  deletedAt       DateTime?   @map("deleted_at")
+  id                 String      @id @default(uuid()) @db.Uuid
+  reference          String      @unique
+  status             OrderStatus @default(NEW)
+  customerName       String      @map("customer_name")
+  customerPhone      String      @map("customer_phone")
+  customerNote       String      @default("") @map("customer_note")
+  preferredPickup    String      @default("") @map("preferred_pickup")
+  deliveryLat        Float?      @map("delivery_lat")
+  deliveryLng        Float?      @map("delivery_lng")
+  deliveryAccuracyM  Float?      @map("delivery_accuracy_m")
+  lines              Json
+  subtotalEtb        Int         @map("subtotal_etb")
+  payInPerson        Boolean     @default(true) @map("pay_in_person")
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
+  deletedAt          DateTime?   @map("deleted_at")
 
   @@index([status])
   @@index([createdAt])
   @@index([customerPhone])
   @@map("orders")
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  actorType String   @map("actor_type")
+  actorId   String?  @map("actor_id") @db.Uuid
+  action    String
+  entity    String?
+  entityId  String?  @map("entity_id")
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  seller    Seller?  @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([action])
+  @@index([entity])
+  @@map("activity_logs")
 }

@@ -51,10 +51,22 @@ orders (standalone; no customer FK — guests only)
 - `orders(status)`, `orders(created_at)`, `orders(customer_phone)`
 - `refresh_tokens(seller_id)`, `refresh_tokens(expires_at)`
 
+## Neon
+
+Production/dev cloud DB uses [Neon](https://neon.tech).
+
+| Env var | Purpose |
+|---------|---------|
+| `DATABASE_URL` | Pooled connection (`…-pooler…`) for the running API — add `pgbouncer=true` |
+| `DIRECT_URL` | Non-pooler host for `prisma migrate` / introspection |
+
+Prisma `schema.prisma` sets `url` + `directUrl` accordingly.
+
 ## Migrations
 
 Prisma migrations live in `prisma/migrations/`. Deploy with:
 
 ```bash
 npx prisma migrate deploy
+npm run prisma:seed
 ```

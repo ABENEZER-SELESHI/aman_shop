@@ -18,7 +18,7 @@ export const requireSellerAuth = async (req: Request, _res: Response, next: Next
 
     if (!token) throw new UnauthorizedError("Missing bearer token");
 
-    const payload = jwt.verify(token, config.jwt.accessSecret) as AccessTokenPayload;
+    const payload = jwt.verify(token, config.jwt.accessSecret, { algorithms: ["HS256"] }) as AccessTokenPayload;
     if (payload.type !== "access" || !payload.sub) throw new UnauthorizedError("Invalid access token");
 
     const seller = await sellerRepository.findById(payload.sub);

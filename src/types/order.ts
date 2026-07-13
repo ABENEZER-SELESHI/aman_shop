@@ -16,4 +16,7 @@ export type CreateOrderInput = {
   preferredPickup: PreferredPickup;
   lines: OrderLine[];
   subtotalEtb: number;
+  deliveryLat: number;
+  deliveryLng: number;
+  deliveryAccuracyM?: number | null;
 };

@@ -25,6 +25,7 @@ export interface ISellerRepository {
   findByEmail(email: string): Promise<Seller | null>;
   findById(id: string): Promise<Seller | null>;
   create(data: { email: string; passwordHash: string; name: string }): Promise<Seller>;
+  updatePasswordHash(id: string, passwordHash: string): Promise<Seller>;
 }
 
 export interface IRefreshTokenRepository {

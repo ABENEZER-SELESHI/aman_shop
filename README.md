@@ -16,7 +16,7 @@ Customers never create accounts. Checkout creates an **order request** only — 
 
 ```bash
 cp .env.example .env
-docker compose up -d postgres
+# Set DATABASE_URL + DIRECT_URL to your Neon (or local) Postgres URLs
 npm install
 npx prisma migrate deploy
 npm run prisma:seed
@@ -24,6 +24,8 @@ npm run dev
 ```
 
 API base: `http://localhost:4000/api/v1`
+
+Local Docker Postgres is optional — see `docker compose up -d postgres` if you prefer not to use Neon locally.
 
 ## Scripts
 

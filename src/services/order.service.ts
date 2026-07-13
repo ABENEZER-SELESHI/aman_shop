@@ -1,7 +1,9 @@
-import { OrderStatus, type Order } from "@prisma/client";
+import { OrderStatus, type Order, Prisma } from "@prisma/client";
 import type { IOrderRepository } from "../interfaces/repositories.js";
 import { orderRepository } from "../repositories/order.repository.js";
 import { emailService, type EmailService } from "./email.service.js";
+import { assertCatalogLines } from "./catalog.service.js";
+import { activityLogService } from "./activityLog.service.js";
 import type { CreateOrderInput } from "../types/order.js";
 import { createOrderId } from "../utils/orderId.js";
 import { NotFoundError, ValidationError } from "../utils/errors.js";
@@ -10,6 +12,41 @@ import { logger } from "../utils/logger.js";
 
 const MAX_REFERENCE_ATTEMPTS = 5;
 
+export type PublicOrderView = {
+  id: string;
+  reference: string;
+  status: OrderStatus;
+  preferredPickup: string;
+  subtotalEtb: number;
+  payInPerson: boolean;
+  createdAt: Date;
+  lines: unknown;
+  customerName: string;
+  customerPhoneMasked: string;
+  deliveryLat: number | null;
+  deliveryLng: number | null;
+};
+
+const maskPhone = (phone: string): string => {
+  if (phone.length < 6) return "****";
+  return `${phone.slice(0, 4)}****${phone.slice(-3)}`;
+};
+
+export const toPublicOrder = (order: Order): PublicOrderView => ({
+  id: order.id,
+  reference: order.reference,
+  status: order.status,
+  preferredPickup: order.preferredPickup,
+  subtotalEtb: order.subtotalEtb,
+  payInPerson: order.payInPerson,
+  createdAt: order.createdAt,
+  lines: order.lines,
+  customerName: order.customerName,
+  customerPhoneMasked: maskPhone(order.customerPhone),
+  deliveryLat: order.deliveryLat,
+  deliveryLng: order.deliveryLng,
+});
+
 export class OrderService {
   constructor(
     private readonly orders: IOrderRepository = orderRepository,
@@ -17,7 +54,8 @@ export class OrderService {
   ) {}
 
   async createOrder(input: CreateOrderInput, requestId?: string): Promise<Order> {
-    const subtotal = input.lines.reduce((sum, line) => sum + line.unitPriceEtb * line.quantity, 0);
+    const lines = await assertCatalogLines(input.lines);
+    const subtotal = lines.reduce((sum, line) => sum + line.unitPriceEtb * line.quantity, 0);
     if (subtotal !== input.subtotalEtb) {
       throw new ValidationError("subtotalEtb must equal the sum of line totals", ["subtotalEtb mismatch"]);
     }
@@ -29,6 +67,7 @@ export class OrderService {
       try {
         created = await this.orders.create({
           ...input,
+          lines,
           customerPhone: normalizeEthiopianPhone(input.customerPhone),
           customerNote: input.customerNote ?? "",
           reference: createOrderId(),
@@ -37,27 +76,44 @@ export class OrderService {
         });
         break;
       } catch (error) {
-        lastError = error;
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+          lastError = error;
+          continue;
+        }
+        throw error;
       }
     }
 
     if (!created) throw lastError instanceof Error ? lastError : new Error("Failed to create order");
 
-    this.emails.sendNewOrderEmail({
-      reference: created.reference,
-      customerName: created.customerName,
-      customerPhone: created.customerPhone,
-      preferredPickup: created.preferredPickup,
-      customerNote: created.customerNote,
-      subtotalEtb: created.subtotalEtb,
-      lines: input.lines,
-    }).catch((error: unknown) => {
-      logger.error("New order email failed", {
-        requestId,
+    void activityLogService
+      .log({
+        actorType: "customer",
+        action: "order.created",
+        entity: "order",
+        entityId: created.reference,
+        message: `New order ${created.reference} from ${created.customerName}`,
+        metadata: { subtotalEtb: created.subtotalEtb },
+      })
+      .catch(() => undefined);
+
+    this.emails
+      .sendNewOrderEmail({
         reference: created.reference,
-        message: error instanceof Error ? error.message : "Unknown error",
+        customerName: created.customerName,
+        customerPhone: created.customerPhone,
+        preferredPickup: created.preferredPickup,
+        customerNote: created.customerNote,
+        subtotalEtb: created.subtotalEtb,
+        lines,
+      })
+      .catch((error: unknown) => {
+        logger.error("New order email failed", {
+          requestId,
+          reference: created.reference,
+          message: error instanceof Error ? error.message : "Unknown error",
+        });
       });
-    });
 
     return created;
   }
@@ -68,11 +124,15 @@ export class OrderService {
     return order;
   }
 
+  async getPublicByReference(reference: string): Promise<PublicOrderView> {
+    return toPublicOrder(await this.getByReference(reference));
+  }
+
   async listOrders(filters: { status?: OrderStatus; limit?: number; offset?: number } = {}): Promise<Order[]> {
     return this.orders.list(filters);
   }
 
-  async updateStatus(reference: string, status: OrderStatus): Promise<Order> {
+  async updateStatus(reference: string, status: OrderStatus, sellerId?: string): Promise<Order> {
     const existing = await this.orders.findByReference(reference);
     if (!existing) throw new NotFoundError("Order not found");
 
@@ -91,7 +151,19 @@ export class OrderService {
       ]);
     }
 
-    return this.orders.updateStatus(reference, status);
+    const updated = await this.orders.updateStatus(reference, status);
+    void activityLogService
+      .log({
+        actorType: "seller",
+        actorId: sellerId,
+        action: "order.status_updated",
+        entity: "order",
+        entityId: reference,
+        message: `Order ${reference} moved to ${status}`,
+        metadata: { from: existing.status, to: status },
+      })
+      .catch(() => undefined);
+    return updated;
   }
 }
 

@@ -13,6 +13,13 @@ type OrderEmailInput = {
   lines: OrderLine[];
 };
 
+type PasswordResetEmailInput = {
+  to: string;
+  name: string;
+  resetToken: string;
+  expiresMinutes: number;
+};
+
 export class EmailService {
   private readonly resend: Resend | null;
 
@@ -26,7 +33,10 @@ export class EmailService {
 
     if (!this.resend) {
       if (config.isDevelopment || config.isTest) {
-        logger.info("Email delivery skipped; logging order email", { subject, text });
+        logger.info("Email delivery skipped; order email logged without PII body", {
+          subject,
+          reference: order.reference,
+        });
         return;
       }
       throw new Error("RESEND_API_KEY is required for email delivery in production");
@@ -35,6 +45,33 @@ export class EmailService {
     await this.resend.emails.send({
       from: config.email.from,
       to: config.email.orderNotifyEmail,
+      subject,
+      text,
+    });
+  }
+
+  async sendPasswordResetEmail(input: PasswordResetEmailInput): Promise<void> {
+    const subject = "Aman Shop — password reset";
+    const text = [
+      `Hi ${input.name},`,
+      "",
+      `Use this one-time reset token within ${input.expiresMinutes} minutes:`,
+      input.resetToken,
+      "",
+      "If you did not request this, ignore this email.",
+    ].join("\n");
+
+    if (!this.resend) {
+      if (config.isDevelopment || config.isTest) {
+        logger.info("Password reset email skipped (dev)", { to: input.to });
+        return;
+      }
+      throw new Error("RESEND_API_KEY is required for email delivery in production");
+    }
+
+    await this.resend.emails.send({
+      from: config.email.from,
+      to: input.to,
       subject,
       text,
     });

@@ -1,0 +1,182 @@
+[
+  {
+    "id": "vase-amber-01",
+    "slug": "amber-stoneware-vase",
+    "name": "Amber Stoneware Vase",
+    "category": "vases",
+    "priceEtb": 1850,
+    "description": "A warm amber vessel with a quiet, tapered neck. Thrown by hand and finished with a soft matte glaze that catches morning light.\n\nIdeal for a few stems or a single branch \u2014 the silhouette does the rest.",
+    "materials": "Stoneware clay, matte amber glaze",
+    "dimensions": "H 22cm \u00b7 \u00d8 12cm",
+    "care": "Wipe with a damp cloth. Not for dishwasher use.",
+    "images": [
+      "/products/vase-amber-01.jpg"
+    ],
+    "featured": true,
+    "available": true,
+    "maxQuantity": 8,
+    "categoryName": "Vases"
+  },
+  {
+    "id": "vase-sage-02",
+    "slug": "sage-cylinder-vase",
+    "name": "Sage Cylinder Vase",
+    "category": "vases",
+    "priceEtb": 1650,
+    "description": "A calm cylindrical form in mist sage. The glaze is intentionally quiet so flowers and branches stay the focus.\n\nEach piece is handmade; slight variations in tone are part of the craft.",
+    "materials": "Stoneware clay, sage glaze",
+    "dimensions": "H 20cm \u00b7 \u00d8 10cm",
+    "care": "Hand wash gently. Avoid sudden temperature changes.",
+    "images": [
+      "/products/vase-sage-02.jpg"
+    ],
+    "featured": true,
+    "available": true,
+    "maxQuantity": 10,
+    "categoryName": "Vases"
+  },
+  {
+    "id": "vase-linen-03",
+    "slug": "linen-bud-vase",
+    "name": "Linen Bud Vase",
+    "category": "vases",
+    "priceEtb": 980,
+    "description": "A small linen-toned bud vase for a single stem or dried grass. Compact enough for a desk or bedside table.",
+    "materials": "Stoneware clay, linen glaze",
+    "dimensions": "H 14cm \u00b7 \u00d8 7cm",
+    "care": "Wipe clean. Not microwave safe.",
+    "images": [
+      "/products/vase-linen-03.jpg"
+    ],
+    "featured": false,
+    "available": true,
+    "maxQuantity": 12,
+    "categoryName": "Vases"
+  },
+  {
+    "id": "vase-olive-04",
+    "slug": "olive-wide-mouth-vase",
+    "name": "Olive Wide-Mouth Vase",
+    "category": "vases",
+    "priceEtb": 2200,
+    "description": "A wider mouth for fuller arrangements. The olive ink glaze sits deep and soft against natural light.",
+    "materials": "Stoneware clay, olive glaze",
+    "dimensions": "H 18cm \u00b7 \u00d8 16cm",
+    "care": "Hand wash only. Dry thoroughly before storing.",
+    "images": [
+      "/products/vase-olive-04.jpg"
+    ],
+    "featured": true,
+    "available": true,
+    "maxQuantity": 6,
+    "categoryName": "Vases"
+  },
+  {
+    "id": "vase-clay-05",
+    "slug": "clay-blush-bottle-vase",
+    "name": "Clay Blush Bottle Vase",
+    "category": "vases",
+    "priceEtb": 1450,
+    "description": "A slender bottle silhouette with a soft clay-blush wash. Quiet ornament for shelves and windowsills.",
+    "materials": "Stoneware clay, blush wash",
+    "dimensions": "H 24cm \u00b7 \u00d8 9cm",
+    "care": "Dust gently. Avoid abrasive cleaners.",
+    "images": [
+      "/products/vase-clay-05.jpg"
+    ],
+    "featured": false,
+    "available": false,
+    "maxQuantity": 5,
+    "categoryName": "Vases"
+  },
+  {
+    "id": "basket-seagrass-01",
+    "slug": "seagrass-market-basket",
+    "name": "Seagrass Market Basket",
+    "category": "baskets",
+    "priceEtb": 2100,
+    "description": "A sturdy woven market basket with twin handles. Soft natural seagrass that ages beautifully with everyday use.",
+    "materials": "Seagrass & raffia",
+    "dimensions": "H 28cm \u00b7 W 36cm \u00b7 D 24cm",
+    "care": "Shake out debris. Spot clean with a damp cloth.",
+    "images": [
+      "/products/basket-seagrass-01.jpg"
+    ],
+    "featured": true,
+    "available": true,
+    "maxQuantity": 8,
+    "categoryName": "Baskets"
+  },
+  {
+    "id": "basket-raffia-02",
+    "slug": "raffia-round-bowl",
+    "name": "Raffia Round Bowl",
+    "category": "baskets",
+    "priceEtb": 1250,
+    "description": "A low, round bowl for fruit, keys, or small textiles. Tight weave with a calm linen presence.",
+    "materials": "Raffia",
+    "dimensions": "H 12cm \u00b7 \u00d8 30cm",
+    "care": "Keep dry. Wipe with a soft cloth.",
+    "images": [
+      "/products/basket-raffia-02.jpg"
+    ],
+    "featured": true,
+    "available": true,
+    "maxQuantity": 10,
+    "categoryName": "Baskets"
+  },
+  {
+    "id": "basket-coil-03",
+    "slug": "coil-weave-storage",
+    "name": "Coil-Weave Storage Basket",
+    "category": "baskets",
+    "priceEtb": 2450,
+    "description": "Tall coil weaving for blankets or laundry. Sage-tinted accent bands woven into the natural base.",
+    "materials": "Seagrass, raffia accent",
+    "dimensions": "H 40cm \u00b7 \u00d8 32cm",
+    "care": "Air regularly. Avoid prolonged moisture.",
+    "images": [
+      "/products/basket-coil-03.jpg"
+    ],
+    "featured": false,
+    "available": true,
+    "maxQuantity": 6,
+    "categoryName": "Baskets"
+  },
+  {
+    "id": "basket-tray-04",
+    "slug": "woven-serving-tray",
+    "name": "Woven Serving Tray",
+    "category": "baskets",
+    "priceEtb": 1580,
+    "description": "A shallow tray with side handles \u2014 for tea service or gathering small objects on a table.",
+    "materials": "Seagrass & cotton wrap",
+    "dimensions": "H 6cm \u00b7 W 40cm \u00b7 D 28cm",
+    "care": "Wipe dry after use. Do not soak.",
+    "images": [
+      "/products/basket-tray-04.jpg"
+    ],
+    "featured": true,
+    "available": true,
+    "maxQuantity": 8,
+    "categoryName": "Baskets"
+  },
+  {
+    "id": "basket-mini-05",
+    "slug": "mini-nest-basket",
+    "name": "Mini Nest Basket",
+    "category": "baskets",
+    "priceEtb": 890,
+    "description": "A small nest for jewelry or desktop odds. Soft coil, palm-sized, and easy to gift.",
+    "materials": "Raffia",
+    "dimensions": "H 8cm \u00b7 \u00d8 14cm",
+    "care": "Dust lightly. Keep away from direct rain.",
+    "images": [
+      "/products/basket-mini-05.jpg"
+    ],
+    "featured": false,
+    "available": true,
+    "maxQuantity": 15,
+    "categoryName": "Baskets"
+  }
+]

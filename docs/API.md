@@ -47,34 +47,40 @@ Side effects: persist order; send seller email via Resend (when configured).
 
 ### `GET /api/v1/orders/:reference`
 
-Fetch order by public reference code.
+Public confirmation lookup. Returns a **masked** order view (no full phone, no customer note).
 
-## Orders (seller — Bearer access token)
+### `GET /api/v1/live`
 
-### `GET /api/v1/orders?status=&limit=&offset=`
+Liveness probe (no DB).
 
-List orders. Optional `status`: `NEW` | `CONFIRMED` | `COMPLETED` | `CANCELLED`.
+### `GET /api/v1/ready`
 
-### `PATCH /api/v1/orders/:reference/status`
-
-**Body:** `{ "status": "CONFIRMED" }`
-
-Allowed transitions:
-
-- `NEW` → `CONFIRMED` | `CANCELLED`
-- `CONFIRMED` → `COMPLETED` | `CANCELLED`
-- Terminal: `COMPLETED`, `CANCELLED`
+Readiness probe — pings PostgreSQL; `503` if down.
 
 ## Auth (seller)
 
 ### `POST /api/v1/auth/login`
 
-**Body:** `{ "email", "password" }` → `{ accessToken, refreshToken, seller }`
+**Body:** `{ "email", "password" }` → `{ accessToken, refreshToken, seller }`  
+Rate limit: 5 / minute.
 
 ### `POST /api/v1/auth/refresh`
 
-**Body:** `{ "refreshToken" }` → new token pair (rotation).
+**Body:** `{ "refreshToken" }` → new token pair (rotation). Reuse of a rotated token revokes all sessions.
 
 ### `POST /api/v1/auth/logout`
 
 **Body:** `{ "refreshToken" }` → revokes refresh token.
+
+### `POST /api/v1/auth/forgot-password`
+
+**Body:** `{ "email" }` — always returns a generic success message (no email enumeration).  
+Rate limit: 3 / hour. Reset tokens expire in **15 minutes**, are one-time, and are stored hashed.
+
+### `POST /api/v1/auth/reset-password`
+
+**Body:** `{ "token", "password" }` — invalidates reset token and all refresh sessions.
+
+### `POST /api/v1/auth/change-password`
+
+Bearer required. **Body:** `{ "currentPassword", "newPassword" }`.

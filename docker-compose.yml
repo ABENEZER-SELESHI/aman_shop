@@ -26,12 +26,13 @@ services:
       NODE_ENV: production
       PORT: 4000
       DATABASE_URL: postgresql://aman:aman_secret@postgres:5432/aman_shop?schema=public
+      DIRECT_URL: postgresql://aman:aman_secret@postgres:5432/aman_shop?schema=public
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-15m}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
-      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_API_KEY: ${RESEND_API_KEY}
       ORDER_NOTIFY_EMAIL: ${ORDER_NOTIFY_EMAIL}
       EMAIL_FROM: ${EMAIL_FROM:-Aman Shop <orders@example.com>}
       RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
