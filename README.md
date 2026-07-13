@@ -32,13 +32,23 @@ Local Docker Postgres is optional — see `docker compose up -d postgres` if you
 | Script | Purpose |
 |--------|---------|
 | `npm run dev` | Start with hot reload |
-| `npm run build` | Compile TypeScript |
+| `npm run build` | Prisma generate + compile TypeScript + copy catalog JSON |
 | `npm start` | Run compiled server |
 | `npm test` | Unit tests |
 | `npm run test:coverage` | Coverage report |
 | `npm run prisma:migrate` | Create/apply migrations (dev) |
 | `npm run prisma:deploy` | Apply migrations (prod) |
 | `npm run prisma:seed` | Seed seller account |
+
+## Deploy (Render)
+
+Use the **`backend`** branch.
+
+- **Build command:** `npm install; npm run build`
+- **Start command:** `npm start` (or `npx prisma migrate deploy && npm start` on first deploy)
+- TypeScript and `@types/*` live in `dependencies` so production `npm install` still can compile
+
+Set env vars from `.env.example` (Neon `DATABASE_URL` / `DIRECT_URL`, JWT secrets, CORS origins including your frontend URL, Resend keys).
 
 ## Environment
 

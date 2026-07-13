@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "prisma generate && tsc && mkdir -p dist/data && cp src/data/catalog.json dist/data/catalog.json",
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write .",
@@ -22,6 +25,13 @@
   },
   "dependencies": {
     "@prisma/client": "5.22.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^22.15.30",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
@@ -33,16 +43,10 @@
     "multer": "^2.2.0",
     "prisma": "5.22.0",
     "resend": "^6.17.2",
+    "typescript": "^5.8.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/compression": "^1.8.1",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.2.0",
-    "@types/node": "^26.1.1",
     "@types/supertest": "^7.2.0",
     "@typescript-eslint/eslint-plugin": "^8.63.0",
     "@typescript-eslint/parser": "^8.63.0",
@@ -52,7 +56,6 @@
     "prettier": "^3.9.5",
     "supertest": "^7.2.2",
     "tsx": "^4.23.0",
-    "typescript": "^5.8.3",
     "vitest": "^4.1.10"
   }
 }
